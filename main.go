@@ -51,6 +51,15 @@ func GetDoc(url string) *goquery.Document{
 	return doc
 }
 
+func PrintRate(rateData *RateData) {
+	var transition = "Highest"
+	if rateData.subset < 0 {
+		transition = "Lowest"
+	}
+	fmt.Printf("%d->%d(%d) %s\nPerformance %d\n",
+		rateData.oldRate, rateData.newRate, rateData.subset, transition, rateData.performance)
+}
+
 func main() {
 	if len(os.Args) == 1 {
 		fmt.Println("ユーザ名を入力してちょ")
@@ -62,7 +71,6 @@ func main() {
 			os.Exit(0)
 		}
 		rateData := Create(rateSlise[0], rateSlise[1], rateSlise[2])
-		fmt.Printf("%d->%d(%d) Highest\nPerformance %d\n",
-			rateData.oldRate, rateData.newRate, rateData.subset, rateData.performance)
+		PrintRate(rateData)
 	}
 }
