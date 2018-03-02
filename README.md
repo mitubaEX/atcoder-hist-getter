@@ -1,13 +1,13 @@
 # go-achist
 go-achist is crawer for AtCoder user history page.
 
-## Installation
+## REST API
 
-```
-go get github.com/mitubaEX/go-achist
-```
+## CLI
 
-## Usage
+CLIツールはcliブランチに移動して，ビルドして使ってください．
+
+### Usage
 
 ```
 go-achist <userID>
