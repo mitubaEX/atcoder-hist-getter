@@ -5,6 +5,6 @@ import (
 	"github.com/go-achist/Models"
 )
 
-func CrawRateData () *Models.RateData{
-	return Repositorys.GetCrawRateData()
+func CrawRateData (name string) *Models.RateData{
+	return Repositorys.GetCrawRateData(name)
 }

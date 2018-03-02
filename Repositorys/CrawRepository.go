@@ -8,8 +8,8 @@ import (
 	"github.com/go-achist/Factory"
 )
 
-func GetCrawRateData () *Models.RateData {
-	url := fmt.Sprintf("http://atcoder.jp/user/%s/history", os.Args[1])
+func GetCrawRateData (name string) *Models.RateData {
+	url := fmt.Sprintf("http://atcoder.jp/user/%s/history", name)
 	rateSlise := RemoteDataSource.GetRateSlice(RemoteDataSource.GetDoc(url))
 	if len(rateSlise) <= 0 {
 		fmt.Println("そのユーザ名は知らん")
