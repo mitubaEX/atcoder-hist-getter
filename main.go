@@ -2,75 +2,61 @@ package main
 
 import (
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
+	"net/http"
+	"github.com/go-achist/Models"
+	"github.com/go-achist/Services"
+	"github.com/ant0ine/go-json-rest/rest"
 	"log"
-	"strings"
-	"strconv"
-	"os"
 )
 
-type RateData struct {
-	performance int
-	newRate int
-	oldRate int
-	subset int
-}
-
-func Create(performance int, newRate int, subset int) *RateData {
-	newRateData := new(RateData)
-	newRateData.performance = performance
-	newRateData.newRate = newRate
-	newRateData.oldRate = newRate - subset
-	newRateData.subset = subset
-	return newRateData
-}
-
-func GetRateSlice(doc *goquery.Document) []int{
-	var rateSlice = []int{}
-	doc.Find("td").Each(func(i int, s *goquery.Selection) {
-		if i >= 3 && i <= 5{
-
-			// oh my god
-			replaceStr := strings.Replace(strings.Replace(s.Text(), "\t", "", -1), "\n", "", -1)
-
-			num, err := strconv.Atoi(replaceStr)
-			if err != nil {
-				log.Fatal(err)
-			}
-			rateSlice = append(rateSlice, num)
-		}
-	})
-	return rateSlice
-}
-
-func GetDoc(url string) *goquery.Document{
-	doc, err := goquery.NewDocument(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return doc
-}
-
-func PrintRate(rateData *RateData) {
+func GetResultString(rateData *Models.RateData) string {
 	var transition = "Highest"
-	if rateData.subset < 0 {
+	if rateData.Subset < 0 {
 		transition = "Lowest"
 	}
-	fmt.Printf("%d->%d(%d) %s\nPerformance %d\n",
-		rateData.oldRate, rateData.newRate, rateData.subset, transition, rateData.performance)
+	return fmt.Sprintf("%d->%d(%d) %s\nPerformance %d\n",
+		rateData.OldRate, rateData.NewRate, rateData.Subset, transition, rateData.Performance)
+}
+
+func handler(w rest.ResponseWriter, r *rest.Request) {
+	name := r.PathParam("name")
+	fmt.Println(name)
+	result := GetResultString(Services.CrawRateData(name))
+	w.WriteJson(map[string]string{"Body": result})
+}
+
+func challenge (w rest.ResponseWriter, r *rest.Request) {
+	val := Models.RequestBody{}
+	err := r.DecodeJsonPayload(&val)
+	if err != nil {
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if val.Challenge == "" {
+		rest.Error(w, "Not Challenge", 400)
+	}
+	if val.Token == "" {
+		rest.Error(w, "Not Challenge", 400)
+	}
+	if val.Type == "" {
+		rest.Error(w, "Not Challenge", 400)
+	}
+	w.WriteJson(map[string]string{"challenge": val.Challenge})
 }
 
 func main() {
-	if len(os.Args) == 1 {
-		fmt.Println("ユーザ名を入力してちょ")
-	} else {
-		url := fmt.Sprintf("http://atcoder.jp/user/%s/history", os.Args[1])
-		rateSlise := GetRateSlice(GetDoc(url))
-		if len(rateSlise) <= 0 {
-			fmt.Println("そのユーザ名は知らん")
-			os.Exit(0)
-		}
-		rateData := Create(rateSlise[0], rateSlise[1], rateSlise[2])
-		PrintRate(rateData)
+	api := rest.NewApi()
+	api.Use(rest.DefaultDevStack...)
+	router, err := rest.MakeRouter(
+		rest.Get("/rate/#name", handler),
+		rest.Get("/", func(w rest.ResponseWriter, r *rest.Request){
+			w.WriteJson(map[string]string{"Body": "Hello, World"})
+		}),
+		rest.Post("/challenge", challenge),
+	)
+	if err != nil {
+		log.Fatal(err)
 	}
+	api.SetApp(router)
+	log.Fatal(http.ListenAndServe(":8080", api.MakeHandler()))
 }
