@@ -8,3 +8,7 @@ import (
 func CrawRateData (name string) *Models.RateData{
 	return Repositorys.GetCrawRateData(name)
 }
+
+func CrawContestData () []Models.ContestData{
+	return Repositorys.GetCrawContestData()
+}

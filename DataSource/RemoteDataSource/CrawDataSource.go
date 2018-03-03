@@ -25,6 +25,14 @@ func GetRateSlice(doc *goquery.Document) []int{
 	return rateSlice
 }
 
+func GetContestSlice(doc *goquery.Document) []string{
+	var contestSlice = []string{}
+	doc.Find("small").Each(func(i int, s *goquery.Selection) {
+		contestSlice = append(contestSlice, s.Text())
+	})
+	return contestSlice
+}
+
 func GetDoc(url string) *goquery.Document{
 	doc, err := goquery.NewDocument(url)
 	if err != nil {

@@ -3,6 +3,12 @@ go-achist is crawer for AtCoder user history page.
 
 ## REST API
 
+Plese write hook url in sendMessage method.
+
+```
+go run main.go
+```
+
 ## CLI
 
 CLIツールはcliブランチに移動して，ビルドして使ってください．

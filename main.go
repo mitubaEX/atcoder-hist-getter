@@ -7,6 +7,9 @@ import (
 	"github.com/go-achist/Services"
 	"github.com/ant0ine/go-json-rest/rest"
 	"log"
+	"strings"
+	"time"
+	"bytes"
 )
 
 func GetResultString(rateData *Models.RateData) string {
@@ -25,23 +28,46 @@ func handler(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson(map[string]string{"Body": result})
 }
 
-func challenge (w rest.ResponseWriter, r *rest.Request) {
-	val := Models.RequestBody{}
-	err := r.DecodeJsonPayload(&val)
+func sendMessage (message string) {
+	name := "ACNotification"
+	text := message
+	channel := "bots"
+
+	jsonStr := `{"channel":"` + channel + `","username":"` + name + `","text":"` + text + `"}`
+
+	req, err := http.NewRequest(
+		"POST",
+		"https://hooks.slack.com/services/hogehoge",
+		bytes.NewBuffer([]byte(jsonStr)),
+	)
+
 	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		fmt.Print(err)
 	}
-	if val.Challenge == "" {
-		rest.Error(w, "Not Challenge", 400)
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Print(err)
 	}
-	if val.Token == "" {
-		rest.Error(w, "Not Challenge", 400)
+
+	defer resp.Body.Close()
+}
+
+func notification (w rest.ResponseWriter, r *rest.Request) {
+	result := Services.CrawContestData()
+	splitedString := strings.Split(result[1].Date, " ")
+
+	t := time.Now()
+	const layout = "2006/01/02"
+
+	if t.Format(layout) == splitedString[0] {
+		sendMessage(result[1].Date + " " + result[1].Name)
 	}
-	if val.Type == "" {
-		rest.Error(w, "Not Challenge", 400)
-	}
-	w.WriteJson(map[string]string{"challenge": val.Challenge})
+
+	w.WriteJson(map[string]string{"challenge": "hello"})
 }
 
 func main() {
@@ -52,7 +78,7 @@ func main() {
 		rest.Get("/", func(w rest.ResponseWriter, r *rest.Request){
 			w.WriteJson(map[string]string{"Body": "Hello, World"})
 		}),
-		rest.Post("/challenge", challenge),
+		rest.Get("/notification", notification),
 	)
 	if err != nil {
 		log.Fatal(err)
