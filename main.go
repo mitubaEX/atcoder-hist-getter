@@ -30,8 +30,8 @@ func handler(w rest.ResponseWriter, r *rest.Request) {
 
 func sendMessage(message string) {
 	name := "ACNotification"
-	text := message
-	channel := "bots"
+	text := "今日のコンテスト：" + message
+	channel := "atcoder_notification"
 
 	jsonStr := `{"channel":"` + channel + `","username":"` + name + `","text":"` + text + `"}`
 
