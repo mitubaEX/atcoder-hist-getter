@@ -13,6 +13,8 @@ WORKDIR /go/src/app
 RUN go get -u github.com/golang/dep/...
 RUN dep ensure
 
+EXPOSE 8080
+
 # Build my app
 RUN go build -o /app/main .
 CMD ["/app/main"]

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/mitubaEX/go-achist/Models"
-	"github.com/mitubaEX/go-achist/Services"
 	"bytes"
 	"fmt"
 	"github.com/ant0ine/go-json-rest/rest"
+	"github.com/mitubaEX/go-achist/Models"
+	"github.com/mitubaEX/go-achist/Services"
 	"log"
 	"net/http"
 	"strings"
@@ -60,9 +60,13 @@ func notification(w rest.ResponseWriter, r *rest.Request) {
 	result := Services.CrawContestData()
 	splitedString := strings.Split(result[1].Date, " ")
 
-	t := time.Now()
+	location := time.FixedZone("Asia/Tokyo", 9*60*60)
+	t := time.Now().In(location)
+
 	const layout = "2006/01/02"
 
+	fmt.Println(t.Format(layout))
+	fmt.Println(splitedString[0])
 	if t.Format(layout) == splitedString[0] {
 		sendMessage(result[1].Date + " " + result[1].Name)
 	}
