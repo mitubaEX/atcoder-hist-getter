@@ -3,9 +3,9 @@ package Repositorys
 import (
 	"fmt"
 	"os"
-	"github.com/go-achist/DataSource/RemoteDataSource"
-	"github.com/go-achist/Models"
-	"github.com/go-achist/Factory"
+	"github.com/mitubaEX/go-achist/DataSource/RemoteDataSource"
+	"github.com/mitubaEX/go-achist/Models"
+	"github.com/mitubaEX/go-achist/Factory"
 )
 
 func GetCrawRateData (name string) *Models.RateData {

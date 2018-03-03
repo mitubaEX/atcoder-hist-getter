@@ -1,8 +1,8 @@
 package Services
 
 import (
-	"github.com/go-achist/Repositorys"
-	"github.com/go-achist/Models"
+	"github.com/mitubaEX/go-achist/Repositorys"
+	"github.com/mitubaEX/go-achist/Models"
 )
 
 func CrawRateData (name string) *Models.RateData{

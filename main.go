@@ -1,15 +1,15 @@
 package main
 
 import (
+	"github.com/mitubaEX/go-achist/Models"
+	"github.com/mitubaEX/go-achist/Services"
+	"bytes"
 	"fmt"
-	"net/http"
-	"github.com/go-achist/Models"
-	"github.com/go-achist/Services"
 	"github.com/ant0ine/go-json-rest/rest"
 	"log"
+	"net/http"
 	"strings"
 	"time"
-	"bytes"
 )
 
 func GetResultString(rateData *Models.RateData) string {
@@ -28,7 +28,7 @@ func handler(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson(map[string]string{"Body": result})
 }
 
-func sendMessage (message string) {
+func sendMessage(message string) {
 	name := "ACNotification"
 	text := message
 	channel := "bots"
@@ -56,7 +56,7 @@ func sendMessage (message string) {
 	defer resp.Body.Close()
 }
 
-func notification (w rest.ResponseWriter, r *rest.Request) {
+func notification(w rest.ResponseWriter, r *rest.Request) {
 	result := Services.CrawContestData()
 	splitedString := strings.Split(result[1].Date, " ")
 
@@ -75,7 +75,7 @@ func main() {
 	api.Use(rest.DefaultDevStack...)
 	router, err := rest.MakeRouter(
 		rest.Get("/rate/#name", handler),
-		rest.Get("/", func(w rest.ResponseWriter, r *rest.Request){
+		rest.Get("/", func(w rest.ResponseWriter, r *rest.Request) {
 			w.WriteJson(map[string]string{"Body": "Hello, World"})
 		}),
 		rest.Get("/notification", notification),

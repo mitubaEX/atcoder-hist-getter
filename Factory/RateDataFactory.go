@@ -1,6 +1,6 @@
 package Factory
 
-import "github.com/go-achist/Models"
+import "github.com/mitubaEX/go-achist/Models"
 
 func CreateRateData(performance int, newRate int, subset int) *Models.RateData {
 	newRateData := new(Models.RateData)
